@@ -15,6 +15,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -41,6 +45,22 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun LemonadeApp(modifier: Modifier = Modifier) {
+    var currentStep by remember { mutableStateOf(1) }
+
+    val imageResource = when(currentStep) {
+        1 -> R.drawable.lemon_tree
+        2 -> R.drawable.lemon_squeeze
+        3 -> R.drawable.lemon_drink
+        else -> R.drawable.lemon_restart
+    }
+
+    val textResource = when(currentStep) {
+        1 -> R.string.lemon_tree_text
+        2 -> R.string.lemon_text
+        3 -> R.string.glass_of_lemonade_text
+        else -> R.string.empty_glass_text
+    }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
@@ -49,17 +69,21 @@ fun LemonadeApp(modifier: Modifier = Modifier) {
     ) {
         Button(
             onClick = {
-
+                if (currentStep < 4) {
+                    currentStep++
+                } else {
+                    currentStep = 1
+                }
             }
         ) {
             Image(
-                painter = painterResource(R.drawable.lemon_tree),
-                contentDescription = stringResource(R.string.lemon_tree_content_description)
+                painter = painterResource(imageResource),
+                contentDescription = stringResource(textResource)
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = stringResource(R.string.lemon_tree_text)
+            text = stringResource(textResource)
         )
     }
 }
