@@ -15,9 +15,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,7 +45,8 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun LemonadeApp(modifier: Modifier = Modifier) {
-    var currentStep by remember { mutableStateOf(1) }
+    var currentStep by remember { mutableIntStateOf(1) }
+    var squeezeCount by remember { mutableIntStateOf(0) }
 
     val imageResource = when(currentStep) {
         1 -> R.drawable.lemon_tree
@@ -61,6 +62,13 @@ fun LemonadeApp(modifier: Modifier = Modifier) {
         else -> R.string.empty_glass_text
     }
 
+    val contentDescriptionResource = when(currentStep) {
+        1 -> R.string.lemon_tree_content_description
+        2 -> R.string.lemon_content_description
+        3 -> R.string.glass_of_lemonade_content_description
+        else -> R.string.empty_glass_content_description
+    }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
@@ -69,21 +77,36 @@ fun LemonadeApp(modifier: Modifier = Modifier) {
     ) {
         Button(
             onClick = {
-                if (currentStep < 4) {
-                    currentStep++
-                } else {
-                    currentStep = 1
+                when (currentStep) {
+                    1 -> {
+                        currentStep = 2
+                        squeezeCount = (2..4).random()
+                    }
+                    2 -> {
+                        squeezeCount--
+                        if (squeezeCount == 0) {
+                            currentStep = 3
+                        }
+                    }
+                    3 -> currentStep = 4
+                    else -> currentStep = 1
                 }
             }
         ) {
             Image(
                 painter = painterResource(imageResource),
-                contentDescription = stringResource(textResource)
+                contentDescription = stringResource(contentDescriptionResource)
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = stringResource(textResource)
+        )
+        Text(
+            text = "CurrentStep: $currentStep"
+        )
+        Text(
+            text = "SqueezeCount: $squeezeCount"
         )
     }
 }
